@@ -1,0 +1,40 @@
+PH  = ../phoenix
+DIR = ./out
+APP = vgmtool
+BIN = $(APP).exe
+
+CXXFILES   = $(wildcard *.cpp)
+HEADERS    = $(wildcard *.hpp)
+HEADERS_FMT = $(wildcard formats/*.hpp)
+WIN32_LIBS = -mconsole -lkernel32 -luser32 -lgdi32 -ladvapi32 -lcomctl32 -lcomdlg32 -lshell32 -lole32
+
+OBJ      = $(DIR)/phoenix-resource.o $(DIR)/phoenix.o $(DIR)/$(CXXFILES:.cpp=.o)
+WINDRES  = windres
+CXX      = g++
+CXXINCS  = -I"$(PH)" -I.
+CXXFLAGS = $(CXXINCS) -std=gnu++0x -DPHOENIX_WINDOWS -g
+RM       = rm -f
+
+.PHONY: all clean
+
+all: mkout $(DIR)/$(BIN)
+
+clean:
+	$(shell if [ -d "$(DIR)" ]; then $(RM) -r "$(DIR)"; fi)
+
+mkout:
+	$(shell if [ ! -d "$(DIR)" ]; then mkdir "$(DIR)"; fi)
+
+# build phoenix
+$(DIR)/phoenix-resource.o: $(PH)/windows/phoenix.rc
+	$(WINDRES) $< $@
+$(DIR)/phoenix.o: $(PH)/phoenix.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# build app
+$(DIR)/%.o: %.cpp $(HEADERS) $(HEADERS_FMT)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(DIR)/%.o: %.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(DIR)/$(BIN): $(OBJ)
+	$(CXX) -mwindows -s -o $@ $(OBJ) $(WIN32_LIBS)
