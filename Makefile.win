@@ -14,6 +14,13 @@ CXX      = g++
 CXXINCS  = -I"$(PH)" -I.
 CXXFLAGS = $(CXXINCS) -std=gnu++0x -DPHOENIX_WINDOWS -g
 RM       = rm -f
+ifeq ($(ARCH),32)
+FORCE_ARCH = -m32
+FORCE_WIND = --target=pe-i386
+else ifeq ($(ARCH),64)
+FORCE_ARCH = -m64
+FORCE_WIND = --target=pe-x86-64
+endif
 
 .PHONY: all clean
 
@@ -27,14 +34,14 @@ mkout:
 
 # build phoenix
 $(DIR)/phoenix-resource.o: $(PH)/windows/phoenix.rc
-	$(WINDRES) $< $@
+	$(WINDRES) $(FORCE_WIND) $< $@
 $(DIR)/phoenix.o: $(PH)/phoenix.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<
 
 # build app
 $(DIR)/%.o: %.cpp $(HEADERS) $(HEADERS_FMT)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<
 $(DIR)/%.o: %.cc
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<
 $(DIR)/$(BIN): $(OBJ)
-	$(CXX) -mwindows -s -o $@ $(OBJ) $(WIN32_LIBS)
+	$(CXX) $(FORCE_ARCH) -mwindows -s -o $@ $(OBJ) $(WIN32_LIBS)
