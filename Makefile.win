@@ -1,4 +1,4 @@
-PH  = ../phoenix
+PH  = ./phoenix
 DIR = ./out
 APP = vgmtool
 BIN = $(APP).exe
