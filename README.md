@@ -2,7 +2,7 @@
 
 by Maxim, Apollolux, ValleyBell
 
-Only the GUI is up, and phoenix and nall aren't included. This will be remedied shortly.
+Only the GUI is up; the actual processing code will be available next.
 
 # Compilation
 
