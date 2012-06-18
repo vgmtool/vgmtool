@@ -6,10 +6,13 @@
 
 using namespace nall;
 
+#include "vgm.types.hpp"
+#include "vgm.header.hpp"
+#include "vgm.command.hpp"
+#include "vgm.gd3.hpp"
+
 namespace VGM {
-	struct Header {
-	};
-	void load(const string& fn) {}
+	void load(const string &fn) {}
 }
 
 #endif

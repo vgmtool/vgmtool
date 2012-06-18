@@ -1,3 +1,6 @@
+#ifndef __VGM_CFG_H__
+#define __VGM_CFG_H__
+
 #include <nall/platform.hpp>
 using namespace nall;
 
@@ -14,3 +17,5 @@ struct Config : configuration {
 		//attach(geoInfo="+512,+128,640,480", "geoInfo");
 	}
 };
+
+#endif

@@ -42,6 +42,31 @@ struct NCanvas : Canvas {
 		}
 	}
 	inline void plot(const Position &p, const uint32_t &col, bool precalc=false) {plot(p.x, p.y, col, precalc);}
+	inline void line(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, uint32_t col, bool precalc=false) {
+		Size cnSz = size();
+		double dx = abs(x1-x2), dy = abs(y1-y2);
+		uint32_t sx = x1<x2?1:-1, sy = y1<y2?1:-1;
+		uint32_t qx = x1, qy = y1;
+		double err = dx-dy, e2;
+		bool done = false;
+		do {
+			plot(qx, qy, col, precalc);
+			done = (bool)(qx==x2&&qy==y2);
+			if (!done) {
+				e2 = 2*err;
+				if (e2>-dy) {
+					err -= dy;
+					qx += sx;
+				}
+				if (e2<dx) {
+					err += dx;
+					qy += sy;
+				}
+			}
+		} while (!done);
+	}
+	inline void line(const Position &z1, const Position &z2, uint32_t col, bool precalc=false) {line(z1.x, z1.y, z2.x, z2.y, col, precalc);}
+	//inline void line(const FPPosition &z1, const FPPosition &z2, uint32_t col, bool precalc=false) {line((uint32_t)z1.x, (uint32_t)z1.y, (uint32_t)z2.x, (uint32_t)z2.y, col, precalc);}
 };
 
 #endif

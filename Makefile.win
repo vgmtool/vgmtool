@@ -3,12 +3,17 @@ DIR = ./out
 APP = vgmtool
 BIN = $(APP).exe
 
-CXXFILES   = $(wildcard *.cpp)
-HEADERS    = $(wildcard *.hpp)
+CXXFILES_WIN = $(wildcard ui/*.cpp)
+CXXFILES_BASE = $(wildcard *.cpp)
+CXXFILES   = $(CXXFILES_BASE)
+#CXXFILES   = $(CXXFILES_WIN) $(CXXFILES_BASE)
 HEADERS_FMT = $(wildcard formats/*.hpp)
-WIN32_LIBS = -mconsole -lkernel32 -luser32 -lgdi32 -ladvapi32 -lcomctl32 -lcomdlg32 -lshell32 -lole32
+HEADERS_WIN = $(wildcard ui/*.hpp)
+HEADERS_BASE = $(wildcard *.hpp)
+HEADERS = $(HEADERS_FMT) $(HEADERS_WIN) $(HEADERS_BASE)
+WIN32_LIBS = -mconsole -lkernel32 -luser32 -lgdi32 -ladvapi32 -lcomctl32 -lcomdlg32 -lshell32 -lole32 -lshlwapi
 
-OBJ      = $(DIR)/phoenix-resource.o $(DIR)/phoenix.o $(DIR)/$(CXXFILES:.cpp=.o)
+OBJ      = $(DIR)/resource.o $(DIR)/phoenix.o $(DIR)/$(CXXFILES:.cpp=.o)
 WINDRES  = windres
 CXX      = g++
 CXXINCS  = -I"$(PH)" -I.
@@ -31,15 +36,16 @@ clean:
 
 mkout:
 	$(shell if [ ! -d "$(DIR)" ]; then mkdir "$(DIR)"; fi)
+#	$(shell if [ ! -d "$(DIR)/ui" ]; then mkdir "$(DIR)/ui"; fi)
 
 # build phoenix
-$(DIR)/phoenix-resource.o: $(PH)/windows/phoenix.rc
+$(DIR)/resource.o: resource.rc res/vgmtool.ico
 	$(WINDRES) $(FORCE_WIND) $< $@
 $(DIR)/phoenix.o: $(PH)/phoenix.cpp
 	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<
 
 # build app
-$(DIR)/%.o: %.cpp $(HEADERS) $(HEADERS_FMT)
+$(DIR)/%.o: %.cpp $(HEADERS) $(CXXFILES_WIN)
 	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<
 $(DIR)/%.o: %.cc
 	$(CXX) $(FORCE_ARCH) $(CXXFLAGS) -c -o $@ $<

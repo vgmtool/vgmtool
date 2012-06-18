@@ -839,6 +839,16 @@ void ComboBox::append_(const lstring &list) {
   }
 }
 
+void ComboBox::modify(unsigned row, const string &text) {
+  state.text(row) = text;
+  p.modify(row, text);
+}
+
+void ComboBox::remove(unsigned row) {
+  state.text.remove(row);
+  p.remove(row);
+}
+
 void ComboBox::reset() {
   state.selection = 0;
   state.text.reset();
@@ -1056,8 +1066,15 @@ void ListView::modify_(unsigned row, const lstring &text) {
   return p.modify(row, text);
 }
 
+void ListView::remove(unsigned row) {
+  state.text.remove(row);
+  state.image.remove(row);
+  return p.remove(row);
+}
+
 void ListView::reset() {
   state.checked.reset();
+  state.image.reset();
   state.text.reset();
   return p.reset();
 }
@@ -1088,6 +1105,11 @@ void ListView::setHeaderText_(const lstring &text) {
 void ListView::setHeaderVisible(bool visible) {
   state.headerVisible = visible;
   return p.setHeaderVisible(visible);
+}
+
+void ListView::setImage(unsigned row, unsigned column, const nall::image &image) {
+  state.image(row)(column) = image;
+  return p.setImage(row, column, image);
 }
 
 void ListView::setSelected(bool selected) {

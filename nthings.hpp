@@ -9,6 +9,52 @@
 using namespace nall;
 using namespace phoenix;
 
+/**** Banner ****/
+struct Banner : HorizontalLayout {
+	NCanvas hdr;
+	NCanvas str;
+	unsigned bgc;
+	string bgi;
+	Banner() : bgc(0xff102080) {
+		unsigned int h = 48, w = 320;
+		hdr.setSize({w,h});
+		hdr.reset(bgc);
+		reflow(w,h);
+	}
+	void reflow(unsigned w, unsigned h) {
+		str.setSize({1024,h});
+		str.reset(bgc);
+		str.update();
+		hdr.update();
+		remove(hdr); remove(str);
+		append(hdr, {w,h});
+		append(str, {~0,~0});
+		//print("reflow banner ",w,"*",h,"\n");
+		synchronizeLayout();
+	}
+	void load(const string &fn) {
+		unsigned int h = 48, w = 320;
+		bgi = fn;
+		image im;//(0, 32, 0xff000000,0xff0000,0xff00,0xff);
+		if (im.load((string){"res/",bgi})) {
+			hdr.setImage(im);
+			h = im.height; w = im.width;
+			//print(w,"*",h,"\n");
+			//MessageWindow::information(*window(),(string){w,"x",h});
+		}
+		else {
+			hdr.reset(bgc);
+			print("Couldn't load ",bgi,"\n");
+			//MessageWindow::information(*window(),(string){"Couldn't load ",bgi});
+		}
+		reflow(w,h);
+	}
+	void create(const string &fn, const unsigned c=0xff102080) {
+		bgc = c;
+		load(fn);
+	}
+};
+
 /*struct ListLayout : HorizontalLayout {
 	ListView tabs;
 	VerticalLayout panel;
@@ -18,6 +64,7 @@ using namespace phoenix;
 	}
 };*/
 
+/**** fieldset ****/
 struct FrameBorderTop : HorizontalLayout {
 	Label label;
 	CheckBox cblabel;
@@ -28,9 +75,9 @@ struct FrameBorderTop : HorizontalLayout {
 	void setText(const string &l) { label.setText(l); cblabel.setText(l); }
 	void create(const string &s="Label", uint32_t col=0xc0c0c0c0, const bool &b=true, const bool &cb=false) {
 		setText(s);
-		_ctl.setSize({3,1}); _ctl.reset(col);// _ctl.plot({0,0}, 0x20ffffff);
+		_ctl.setSize({3,2}); _ctl.reset(col); _ctl.line({0,1},{2,1},0xc0ffffff);// _ctl.plot({0,0}, 0x20ffffff);
 		_cbl.setSize({1,3}); _cbl.reset(col);
-		_ctr.setSize({1024,1}); _ctr.reset(col);// _ctr.plot({2047,0}, 0x20ffffff);
+		_ctr.setSize({1024,2}); _ctr.reset(col); _ctr.line({0,1},{1023,1},0xc0ffffff);// _ctr.plot({2047,0}, 0x20ffffff);
 		_cbr.setSize({1,3}); _cbr.reset(col);
 		setBorderCheckbox(b,cb);
 	}
@@ -45,8 +92,8 @@ struct FrameBorderTop : HorizontalLayout {
 		_cl.setAlignment(0.0); _cl2.setAlignment(0.0);
 		_cr.setAlignment(1.0); _cr2.setAlignment(1.0);
 		_cl.append(pxl, {1,1}); _cl.append(_cbl, {1,3});
-		_cl2.append(_ctl, {3,1}); _cl2.append(pxl2, {3,3});
-		_cr.append(_ctr, {~0,1}); _cr.append(pxr,{~0,3});
+		_cl2.append(_ctl, {3,2}); _cl2.append(pxl2, {3,3});
+		_cr.append(_ctr, {~0,2}); _cr.append(pxr,{~0,3});
 		_cr2.append(pxr2,{1,1}); _cr2.append(_cbr, {1,3});
 		setAlignment(1.0);
 		remove(_cl); remove(_cl2); remove(label); remove(cblabel); remove(_cr); remove(_cr2);
